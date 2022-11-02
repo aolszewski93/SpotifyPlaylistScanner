@@ -57,7 +57,10 @@ def playlist_containing(df_pls, word = ''):
     new_df = df_pls[df_pls['playlist_name'].str.contains(word, case=False, na=False)]
     return new_df
 
-
+#this function will find duplicates from old playlists to new and remove the track from the newest playlists
+def remove_duplicates(df_pls, newest=True):
+    pl_uris = df_pls['uri']
+    
 
 # # to see the structure of the dict
 # one_playlist = sp.current_user_playlists(limit=3)
@@ -76,4 +79,4 @@ print(df_user_playlists)
 df_leah = playlist_containing(df_user_playlists, word = 'Leah')
 print(df_leah)
 
-#next step --> write a function that finds duplicate tracks in playlist and removes them from the most recent playlist created
+remove_duplicates(df_leah)
