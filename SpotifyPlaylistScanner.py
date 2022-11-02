@@ -32,7 +32,7 @@ def tracks_in_playlist(playlist_id):
         # print("track_number: %d --- track_name: %s --- track_artist: %s --- track_id: %s" % (i,track_name,track_artist,track_uri))
     return df_pl
 
-#the following function takes a user and returns dataframe with playlist information
+#the following function takes a user and returns dataframe with playlist information from newest to oldest
 def playlists_from_user(sp):
     df_pls = pd.DataFrame(columns = ['playlist_number','playlist_name','playlist_length','uri'])
     #grab user playlist data. return type dict
@@ -59,8 +59,8 @@ def playlist_containing(df_pls, word = ''):
 
 
 
-#to see the structure of the dict
-# one_playlist = sp.current_user_playlists(limit=1)
+# # to see the structure of the dict
+# one_playlist = sp.current_user_playlists(limit=3)
 # pretty = json.dumps(one_playlist, indent=4, sort_keys=True)
 # print(pretty)
 
@@ -75,3 +75,5 @@ print(df_user_playlists)
 #grab all playlists containing the word leah
 df_leah = playlist_containing(df_user_playlists, word = 'Leah')
 print(df_leah)
+
+#next step --> write a function that finds duplicate tracks in playlist and removes them from the most recent playlist created
