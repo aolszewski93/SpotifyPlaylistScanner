@@ -24,11 +24,6 @@ def tracks_in_playlist(playlist_id):
                         'track_name':track_name,
                         'track_artists':track_artist,
                         'uri':track_uri}])])
-        # df_pl.iloc[i]['track_number'] = track_number
-        # df_pl.iloc[i]['track_name'] = track_name
-        # df_pl.iloc[i]['track_artists'] = track_artist
-        # df_pl.iloc[i]['uri'] = track_uri
-
         # print("track_number: %d --- track_name: %s --- track_artist: %s --- track_id: %s" % (i,track_name,track_artist,track_uri))
     return df_pl
 
@@ -58,10 +53,19 @@ def playlist_containing(df_pls, word = ''):
     return new_df
 
 #this function will find duplicates from old playlists to new and remove the track from the newest playlists
-def remove_duplicates(df_pls, newest=True):
-    pl_uris = df_pls['uri']
-    
-
+def compile_pl_tracks(df_pls, newest=True):
+    # pl_uris = df_pls['uri']
+    #create a dataframe with a compiled track list of all the playlists_from_user
+    df_pl_tracks = pd.DataFrame(columns = ['playlist_number','playlist_name','track_name','track_artists','track_uri'])
+    for i,row_pl in df_pls.iterrows():
+        df_tracks = tracks_in_playlist(row_pl['uri'])
+        for i, row_track in df_tracks.iterrows():
+            df_pl_tracks = pd.concat([df_pl_tracks, pd.DataFrame.from_records([{'playlist_number': row_pl['playlist_number'],
+                                                                            'playlist_name': row_pl['playlist_name'],
+                                                                            'track_name': row_track['track_name'],
+                                                                            'track_artists': row_track['track_artists'],
+                                                                            'track_uri': row_track['uri']}])])
+    return df_pl_tracks
 # # to see the structure of the dict
 # one_playlist = sp.current_user_playlists(limit=3)
 # pretty = json.dumps(one_playlist, indent=4, sort_keys=True)
@@ -69,14 +73,11 @@ def remove_duplicates(df_pls, newest=True):
 
 #get playlists_from_user
 df_user_playlists = playlists_from_user(sp)
-print(df_user_playlists)
-# #get tracks
-# pl_id = 'spotify:playlist:5OTsR8IJOfnRxZOsOvo4SC'
-# df_playlist_tracks = tracks_in_playlist(pl_id)
-# print(df_playlist_tracks.head())
+# print(df_user_playlists)
 
 #grab all playlists containing the word leah
 df_leah = playlist_containing(df_user_playlists, word = 'Leah')
 print(df_leah)
 
-remove_duplicates(df_leah)
+df_compiled = compile_pl_tracks(df_leah)
+print(df_compiled)
