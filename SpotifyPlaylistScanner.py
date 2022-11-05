@@ -42,7 +42,7 @@ def playlists_from_user(sp):
         #add to dataframe
         df_pls = pd.concat([df_pls, pd.DataFrame.from_records([{'playlist_number':pl_number,
                                                                 'playlist_name':pl_name,
-                                                                'playlist_length':i,
+                                                                'playlist_length':pl_length,
                                                                 'uri':pl_uri}])])
         # print("pl_number: %d --- pl_name:%s --- pl_id:%s --- pl_length:%s" % (pl_number, pl_name, pl_uri,pl_length))
     return df_pls
@@ -56,16 +56,32 @@ def playlist_containing(df_pls, word = ''):
 def compile_pl_tracks(df_pls, newest=True):
     # pl_uris = df_pls['uri']
     #create a dataframe with a compiled track list of all the playlists_from_user
-    df_pl_tracks = pd.DataFrame(columns = ['playlist_number','playlist_name','track_name','track_artists','track_uri'])
+    df_pl_tracks = pd.DataFrame(columns = ['playlist_number','playlist_name','playlist_uri','track_name','track_artists','track_uri'])
     for i,row_pl in df_pls.iterrows():
         df_tracks = tracks_in_playlist(row_pl['uri'])
         for i, row_track in df_tracks.iterrows():
             df_pl_tracks = pd.concat([df_pl_tracks, pd.DataFrame.from_records([{'playlist_number': row_pl['playlist_number'],
                                                                             'playlist_name': row_pl['playlist_name'],
+                                                                            'playlist_uri': row_pl['uri'],
                                                                             'track_name': row_track['track_name'],
                                                                             'track_artists': row_track['track_artists'],
                                                                             'track_uri': row_track['uri']}])])
     return df_pl_tracks
+
+def remove_duplicate_tracks(sp, df_pl_tr):
+    #reverse the order of playlists so that the oldest playlist apears first in the dataframe
+    df_pl_tr.sort_values(by=['playlist_number'], ascending=False, inplace = True)
+    #add column that states if the track was previously found in the dataframe
+    df_pl_tr['duplicate'] = df_pl_tr['track_uri'].duplicated()
+    #make a subset of the data frame that contains infor of all duplicate tracks_in_playlist
+    df_rm = df_pl_tr[df_pl_tr['duplicate']==True]
+    print(df_rm)
+    #remove all duplicate tracks_in_playlist
+    for i, row in df_rm.iterrows():
+        sp.playlist_remove_all_occurrences_of_items(row['playlist_uri'], row['track_uri'])
+        print("%s by %s was removed from %s" % (row['track_name'], row['track_artists'], row['playlist_name']))
+    print(df_rm)
+
 # # to see the structure of the dict
 # one_playlist = sp.current_user_playlists(limit=3)
 # pretty = json.dumps(one_playlist, indent=4, sort_keys=True)
@@ -73,11 +89,16 @@ def compile_pl_tracks(df_pls, newest=True):
 
 #get playlists_from_user
 df_user_playlists = playlists_from_user(sp)
-# print(df_user_playlists)
+print(df_user_playlists)
 
 #grab all playlists containing the word leah
 df_leah = playlist_containing(df_user_playlists, word = 'Leah')
 print(df_leah)
 
 df_compiled = compile_pl_tracks(df_leah)
-print(df_compiled)
+
+remove_duplicate_tracks(sp, df_compiled)
+
+#get playlists_from_user
+df_user_playlists = playlists_from_user(sp)
+print(df_user_playlists)
