@@ -1,3 +1,8 @@
+"""
+This program gathers collects a user's playlists that have a common word in the title and removes the duplicate tracks from newer playlists that already
+appear on older playlists.
+"""
+
 #import useful libraries
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
