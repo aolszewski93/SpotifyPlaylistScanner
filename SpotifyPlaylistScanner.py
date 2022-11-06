@@ -5,7 +5,7 @@ import json
 from pprint import pprint
 import pandas as pd
 
-scope = "user-library-read"
+scope = "playlist-modify-public"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
 #define functions
@@ -78,7 +78,10 @@ def remove_duplicate_tracks(sp, df_pl_tr):
     print(df_rm)
     #remove all duplicate tracks_in_playlist
     for i, row in df_rm.iterrows():
-        sp.playlist_remove_all_occurrences_of_items(row['playlist_uri'], row['track_uri'].split(':')[-1])
+        remove_track = [row['track_uri'].split(':')[-1]]
+        from_pl = row['playlist_uri'].split(':')[-1]
+        print(remove_track, from_pl)
+        sp.playlist_remove_all_occurrences_of_items(playlist_id = from_pl, items = remove_track)
         print("%s by %s was removed from %s" % (row['track_name'], row['track_artists'], row['playlist_name']))
     print(df_rm)
 
@@ -102,3 +105,5 @@ remove_duplicate_tracks(sp, df_compiled)
 #get playlists_from_user
 df_user_playlists = playlists_from_user(sp)
 print(df_user_playlists)
+
+sp.me()
