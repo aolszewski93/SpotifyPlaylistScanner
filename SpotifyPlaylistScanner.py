@@ -73,17 +73,20 @@ def remove_duplicate_tracks(sp, df_pl_tr):
     df_pl_tr.sort_values(by=['playlist_number'], ascending=False, inplace = True)
     #add column that states if the track was previously found in the dataframe
     df_pl_tr['duplicate'] = df_pl_tr['track_uri'].duplicated()
-    #make a subset of the data frame that contains infor of all duplicate tracks_in_playlist
-    df_rm = df_pl_tr[df_pl_tr['duplicate']==True]
-    print(df_rm)
-    #remove all duplicate tracks_in_playlist
-    for i, row in df_rm.iterrows():
-        remove_track = [row['track_uri'].split(':')[-1]]
-        from_pl = row['playlist_uri'].split(':')[-1]
-        print(remove_track, from_pl)
-        sp.playlist_remove_all_occurrences_of_items(playlist_id = from_pl, items = remove_track)
-        print("%s by %s was removed from %s" % (row['track_name'], row['track_artists'], row['playlist_name']))
-    print(df_rm)
+
+    if all(item is False for item in df_pl_tr['duplicate']):
+        print('There are no duplicates in playlists...')
+    else:
+        #make a subset of the data frame that contains infor of all duplicate tracks_in_playlist
+        df_rm = df_pl_tr[df_pl_tr['duplicate']==True]
+        print(df_rm)
+        #remove all duplicate tracks_in_playlist
+        for i, row in df_rm.iterrows():
+            remove_track = [row['track_uri'].split(':')[-1]]
+            from_pl = row['playlist_uri'].split(':')[-1]
+            print(remove_track, from_pl)
+            sp.playlist_remove_all_occurrences_of_items(playlist_id = from_pl, items = remove_track)
+            print("%s by %s was removed from %s" % (row['track_name'], row['track_artists'], row['playlist_name']))
 
 # # to see the structure of the dict
 # one_playlist = sp.current_user_playlists(limit=3)
@@ -92,18 +95,10 @@ def remove_duplicate_tracks(sp, df_pl_tr):
 
 #get playlists_from_user
 df_user_playlists = playlists_from_user(sp)
-print(df_user_playlists)
 
 #grab all playlists containing the word leah
 df_leah = playlist_containing(df_user_playlists, word = 'Leah')
-print(df_leah)
 
 df_compiled = compile_pl_tracks(df_leah)
 
 remove_duplicate_tracks(sp, df_compiled)
-
-#get playlists_from_user
-df_user_playlists = playlists_from_user(sp)
-print(df_user_playlists)
-
-sp.me()
