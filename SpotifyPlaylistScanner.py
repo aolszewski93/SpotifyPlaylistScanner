@@ -57,7 +57,7 @@ def playlist_containing(df_pls, word = ''):
     new_df = df_pls[df_pls['playlist_name'].str.contains(word, case=False, na=False)]
     return new_df
 
-#this function will find duplicates from old playlists to new and remove the track from the newest playlists
+#this function will compile track info from multiple playlists
 def compile_pl_tracks(df_pls, newest=True):
     # pl_uris = df_pls['uri']
     #create a dataframe with a compiled track list of all the playlists_from_user
@@ -114,7 +114,6 @@ df_user_playlists = playlists_from_user(sp)
 df_leah = playlist_containing(df_user_playlists, word = 'Leah')
 
 df_compiled = compile_pl_tracks(df_leah)
+remove_duplicate_tracks(sp, df_compiled)
 
-# remove_duplicate_tracks(sp, df_compiled)
-
-copy_tracks_to_playlist(sp, '5OTsR8IJOfnRxZOsOvo4SC', '1NAUVytX4rAzmSFRCRv9eC')
+# copy_tracks_to_playlist(sp, '5OTsR8IJOfnRxZOsOvo4SC', '1NAUVytX4rAzmSFRCRv9eC')
