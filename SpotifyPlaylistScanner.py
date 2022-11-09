@@ -73,6 +73,7 @@ def compile_pl_tracks(df_pls, newest=True):
                                                                             'track_uri': row_track['uri']}])])
     return df_pl_tracks
 
+#this function will take a dataframe of tracks and remove them from their corresponding playlists
 def remove_duplicate_tracks(sp, df_pl_tr):
     #reverse the order of playlists so that the oldest playlist apears first in the dataframe
     df_pl_tr.sort_values(by=['playlist_number'], ascending=False, inplace = True)
@@ -93,6 +94,14 @@ def remove_duplicate_tracks(sp, df_pl_tr):
             sp.playlist_remove_all_occurrences_of_items(playlist_id = from_pl, items = remove_track)
             print("%s by %s was removed from %s" % (row['track_name'], row['track_artists'], row['playlist_name']))
 
+#this function will copy all tracks from one playlist to another
+def copy_tracks_to_playlist(sp, to_pl_id, from_pl_id):
+    df_from_pl_tracks = tracks_in_playlist(from_pl_id)
+    from_pl_track_id = [x.split(':')[-1] for x in df_from_pl_tracks['uri']]
+    sp.playlist_add_items(to_pl_id, from_pl_track_id, position=None)
+    print("Track from %s successfully copied to %s" % (from_pl_id, to_pl_id))
+
+
 # # to see the structure of the dict
 # one_playlist = sp.current_user_playlists(limit=3)
 # pretty = json.dumps(one_playlist, indent=4, sort_keys=True)
@@ -106,4 +115,6 @@ df_leah = playlist_containing(df_user_playlists, word = 'Leah')
 
 df_compiled = compile_pl_tracks(df_leah)
 
-remove_duplicate_tracks(sp, df_compiled)
+# remove_duplicate_tracks(sp, df_compiled)
+
+copy_tracks_to_playlist(sp, '5OTsR8IJOfnRxZOsOvo4SC', '1NAUVytX4rAzmSFRCRv9eC')
