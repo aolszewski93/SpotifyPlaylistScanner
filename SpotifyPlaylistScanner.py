@@ -1,6 +1,13 @@
 """
 This program gathers collects a user's playlists that have a common word in the title and removes the duplicate tracks from newer playlists that already
 appear on older playlists.
+
+You will need to set the following environmental variables to be able to run the API with credentials
+export SPOTIPY_REDIRECT_URI=whatever
+export SPOTIPY_CLIENT_ID=whatever
+export SPOTIPY_CLIENT_SECRET=whatever
+
+more info on the redirect uri: https://spotipy.readthedocs.io/en/2.22.1/#redirect-uri
 """
 
 #import useful libraries
@@ -114,6 +121,7 @@ df_user_playlists = playlists_from_user(sp)
 df_leah = playlist_containing(df_user_playlists, word = 'Leah')
 
 df_compiled = compile_pl_tracks(df_leah)
+# print(df_compiled)
 remove_duplicate_tracks(sp, df_compiled)
 
 # copy_tracks_to_playlist(sp, '5OTsR8IJOfnRxZOsOvo4SC', '1NAUVytX4rAzmSFRCRv9eC')
